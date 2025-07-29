@@ -79,7 +79,7 @@ chain = prompt_template | llm
 
 # --- Streamlit UI ---
 st.set_page_config(page_title="Solar AI 비서(감성 점수 표현)", layout="centered")
-st.title("💬 Solar AI 비서(감성 점수 표현)")
+st.title("💬 Solar AI 비서 Ver.0.1")
 
 # 세션 상태 초기화 (RAG 관련 변수 제거)
 if "messages" not in st.session_state:
