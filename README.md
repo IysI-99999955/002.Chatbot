@@ -13,7 +13,7 @@
 
 3. 감성 분석 기능  
   3-1) 챗봇의 답변을 HuggingFace의 pipeline, AutoTokenizer, AutoModelForSequenceClassification을 사용하여 감정 분석, 토큰화, 긍정/부정 감성 분석을 진행하고, 결과(라벨, 점수)를 채팅창에 표시.  
-  
+
   3-2) 감성 분석 모델: sangrimlee/bert-base-multilingual-cased-nsmc  
 
 4. 프롬프트 엔지니어링 강화  
