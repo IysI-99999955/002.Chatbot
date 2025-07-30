@@ -16,7 +16,7 @@
   3-2) 감성 분석 모델: `sangrimlee/bert-base-multilingual-cased-nsmc`  
 
 4. 프롬프트 엔지니어링 강화  
-  4-1) 챗봇의 역할, 행동 지침, 부적절한 내용 제재, 프롬프트 인젝션 방어 원칙 등을 프롬프트 System_Message에 정의.  
+  4-1) 챗봇의 역할, 행동 지침, 부적절한 내용 제재, 프롬프트 인젝션 방어 원칙 등을 프롬프트 `System_Message`에 정의.  
   4-2) `temperature`, `max_tokens` 수치를 조정하여 자연스럽고 부드런운 언행이 표시될 수 있도록 조정.  
 
 5. 대화 횟수 제한  
