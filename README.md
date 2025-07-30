@@ -1,8 +1,8 @@
 
 # Streamlit과 Upstage 솔루션 기반 Chatbot 생성
 
-이 프로젝트는 **Streamlit과 LangChain**을 활용하여 사용자와 대화하고, 이전 대화 내용을 기억하는 챗봇을 생성합니다.
-
+이 프로젝트는 **Streamlit과 LangChain**을 활용하여 사용자와 대화하고, 이전 대화 내용을 기억하는 챗봇을 생성합니다.  
+  
   
   
 ---
