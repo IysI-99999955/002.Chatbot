@@ -7,7 +7,7 @@
 
 ## 🎯 연구 목표 🎯
 
-1. **LLM** : Upstage의 Solar LLM(`solar-1-mini-chat`)
+1. **LLM 활용** : Upstage의 Solar LLM(`solar-1-mini-chat`)
 
 2. **대화 기억 방식** : Streamlit의 `st.session_state` 사용(No RAG)
 
