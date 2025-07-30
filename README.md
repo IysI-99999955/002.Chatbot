@@ -7,19 +7,19 @@
 
 ## 🎯 연구 목표 🎯
 
-1. LLM : Upstage의 Solar LLM(`solar-1-mini-chat`)
+1. **LLM** : Upstage의 Solar LLM(`solar-1-mini-chat`)
 
-2. 대화 기억 방식: Streamlit의 `st.session_state` 사용(No RAG)
+2. **대화 기억 방식** : Streamlit의 `st.session_state` 사용(No RAG)
 
-3. 감성 분석 기능  
+3. **감성 분석 기능**  
   3-1) 챗봇의 답변을 HuggingFace의 `pipeline`, `AutoTokenizer`, `AutoModelForSequenceClassification` 을 사용하여 감정 분석, 토큰화, 긍정/부정 감성 분석을 진행하고, 결과(라벨, 점수)를 채팅창에 표시.  
   3-2) 감성 분석 모델: `sangrimlee/bert-base-multilingual-cased-nsmc`  
 
-4. 프롬프트 엔지니어링 강화  
+4. **프롬프트 엔지니어링 강화**  
   4-1) 챗봇의 역할, 행동 지침, 부적절한 내용 제재, 프롬프트 인젝션 방어 원칙 등을 프롬프트 `System_Message`에 정의.  
   4-2) `temperature`, `max_tokens` 수치를 조정하여 자연스럽고 부드런운 언행이 표시될 수 있도록 조정.  
 
-5. 대화 횟수 제한  
+5. **대화 횟수 제한**  
   5-1) 불필요한 자원 낭비를 제한을 위해 사용자가 챗봇에게 보낼 수 있는 메시지 횟수를 제한하고, 남은 횟수를 사이드바에 Markdown으로 표시.
   
 ---
