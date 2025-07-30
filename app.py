@@ -11,17 +11,17 @@ import torch # PyTorch 백엔드 사용
 # 환경 변수 로드
 load_dotenv()
 
-# --- 환경 변수 및 모델 로드 ---
+# 환경 변수 및 모델 로드
 UPSTAGE_API_KEY = os.getenv("UPSTAGE_API_KEY")
 if not UPSTAGE_API_KEY:
     st.error("❌ UPSTAGE_API_KEY 환경 변수가 설정되지 않았음. 설정 파일을 확인해주세요.❌")
     st.stop()
 
-@st.cache_resource
+@st.cache_resource  # 한번 실행 후, 캐시에 저장
 def load_sentiment_analyzer():
     try:
         # 한국어 감성 분석 모델: sangrimlee/bert-base-multilingual-cased-nsmc
-        # 이전 고려 모델:beomi/kcbert-base, monologg/koelectra-small-v3-discriminator
+        # 추가 고려 모델:beomi/kcbert-base, monologg/koelectra-small-v3-discriminator
         model_name = "sangrimlee/bert-base-multilingual-cased-nsmc" 
         
         tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -31,16 +31,16 @@ def load_sentiment_analyzer():
         
         return classifier
     except Exception:
-        pass  # 아무 메시지도 출력하지 않음        
+        pass  # 어떤 오류 메시지도 출력하지 않기        
 
 sentiment_analyzer = load_sentiment_analyzer()
 
-# --- LangChain 설정 ---
+# LangChain 환경설정
 llm = ChatUpstage(
     model="solar-1-mini-chat", 
     api_key=UPSTAGE_API_KEY,
-    temperature=0.7,  # 응답의 일관성을 위해 부드러운 온도 설정, 추후 0.5, 0.3 수준으로 변경 테스트 필요
-    max_tokens=1000   # 최대 토큰 수 제한, 추후 500,1000 등으로 변경 테스트 필요
+    temperature=0.7,  # 응답의 일관성을 위해 부드러운 온도 설정(변수 많음)
+    max_tokens=1000   # 최대 토큰 수 제한(추후 400~1000 사이로 조정)
 )
 
 # 프롬프트 템플릿(챗봇 컨트롤 지침 포함)
@@ -60,13 +60,13 @@ system_message_content = (
     "6. 사용자의 질문이 불명확하거나 부적절할 경우, 정중하게 되물어보거나 주제를 자연스럽게 전환합니다.\n"
     "7. 모르는 질문에 대해 무리하게 답변하지 않고, \"죄송합니다만, 해당 정보는 알 수 없습니다.\"라고 답변합니다.\n"
     "\n"
-    "8. 당신의 최우선 목적은 사용자에게 신뢰를 주고, 유용하고 부드러운 상호작용을 제공하는 것입니다."
-    "9. 답변은 완전하고 자연스러운 문장으로 작성하되, 불필요한 예시나 설명을 제시하지 않습니다."
-    "10. 사용자의 개인정보에 대해서는 대화 중 언급된 부분에 대해서는 답변할 수 있습니다."
-    "11. 사용자의 질문을 정확하게 기억하고 요약하여 답변할 수 있습니다."
+    "당신의 최우선 목적은 사용자에게 신뢰를 주고, 유용하고 부드러운 상호작용을 제공하는 것입니다."
+    "답변은 완전하고 자연스러운 문장으로 작성하되, 불필요한 예시나 설명을 제시하지 않습니다."
+    "사용자의 개인정보에 대해서는 대화 중 사용자의 메시지로 표현된 부분에 대해서는 답변할 수 있습니다."
+    "사용자의 질문을 정확하게 기억하고 요약하여 답변할 수 있습니다."
 )
 
-# RAG 체인 대신 기본 체인 사용
+# 기본 체인 사용(RAG 사용안함)
 prompt_template = ChatPromptTemplate.from_messages(
     [
         SystemMessage(content=system_message_content),
@@ -81,7 +81,7 @@ chain = prompt_template | llm
 st.set_page_config(page_title="Solar AI 비서(감성 점수 표현)", layout="centered")
 st.title("💬 Solar AI 비서 Ver.0.1")
 
-# 세션 상태 초기화 (RAG 관련 변수 제거)
+# 세션 상태 초기화 설정(빈 리스트, 제로 카운트)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "sentiment_history" not in st.session_state:
@@ -90,9 +90,9 @@ if "message_count" not in st.session_state:
     st.session_state.message_count = 0
 
 # 최대 메시지 횟수 설정
-MAX_MESSAGES = 10 # 예시: 10회로 제한
+MAX_MESSAGES = 10
 
-# 현재 메시지 카운트 표시
+# 현재 메시지 카운트 표시(좌측 사이드바 default)
 st.sidebar.markdown(f"사용가능한 잔여 메시지 수: {st.session_state.message_count} / {MAX_MESSAGES}")
 if st.session_state.message_count >= MAX_MESSAGES:
     st.sidebar.warning("⚠️ 최대 메시지 횟수에 도달했습니다. 대화를 초기화해주세요.")
@@ -102,25 +102,25 @@ if st.session_state.message_count >= MAX_MESSAGES:
 for i, message in enumerate(st.session_state.messages):
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-        # AI 답변에 대한 감성 분석 결과 표시
+        # AI 답변에 대한 감성 분석 결과 표시(감정분석 길이보다 작을때만 실행)
         if message["role"] == "assistant" and i < len(st.session_state.sentiment_history):
             sentiment_info = st.session_state.sentiment_history[i]
-            if sentiment_info: # 감성 분석 결과가 있는 경우만 표시
+            if sentiment_info: # 감성 분석 결과가 있는 경우만 실행하고 표시
                 st.caption(f"감성 분석: {sentiment_info['label']} (점수: {sentiment_info['score']:.5f})")
 
 # 사용자 입력 처리
-if prompt_input := st.chat_input("회장님, 무엇을 도와드릴까요?"):
-    # 사용자 메시지는 항상 표시하고 저장
+if prompt_input := st.chat_input("Sir, 무엇을 도와드릴까요?"):
+    # 사용자 메시지는 항상 표시하고 메시지에 저장
     st.chat_message("user").markdown(prompt_input)
     st.session_state.messages.append({"role": "user", "content": prompt_input})
 
     # 메시지 횟수 증가
     st.session_state.message_count += 1
 
-    ai_response = "" # LLM 응답 초기화
-    sentiment_result = None # 감성 분석 결과 초기화
+    ai_response = "" # LLM 응답 초기화 선언
+    sentiment_result = None # 감성 분석 결과 초기화 선언
 
-    # 메시지 횟수 제한 확인 및 LLM 호출 제어
+    # 메시지 횟수 제한 및 LLM 호출 제어
     if st.session_state.message_count > MAX_MESSAGES:
         st.warning(f"최대 메시지 횟수({MAX_MESSAGES}회)에 도달하여 더 이상 답변을 생성할 수 없습니다. 대화를 초기화해주세요.")
         ai_response = "최대 대화 횟수에 도달했습니다. 새로운 대화를 시작하려면 '대화 초기화' 버튼을 눌러주세요."
@@ -128,7 +128,7 @@ if prompt_input := st.chat_input("회장님, 무엇을 도와드릴까요?"):
 
     else:
         with st.spinner("답변 준비 중..."):
-            # LangChain에 전달할 대화 이력 구성 (st.session_state.messages 사용)
+            # LangChain에 전달할 대화 이력 구성(st.session_state.messages 사용)
             langchain_messages = []
             for msg in st.session_state.messages:
                 if msg["role"] == "user":
@@ -136,24 +136,22 @@ if prompt_input := st.chat_input("회장님, 무엇을 도와드릴까요?"):
                 elif msg["role"] == "assistant":
                     langchain_messages.append(AIMessage(content=msg["content"]))
             
-            # 챗봇 답변 생성 (기존 chain.invoke 사용으로 복원)
-            # result = st.session_state.rag_chain.invoke 대신 chain.invoke 사용
+            # 챗봇 답변 생성
             response = chain.invoke({
                 "chat_history": langchain_messages, 
                 "input": prompt_input,
-                # "context": [] # RAG 제거로 context 파라미터 삭제
             })
-            ai_response = response.content # result["answer"] 대신 response.content 사용
-            # retrieved_context = "\n".join([doc.page_content for doc in result["context"]]) # RAG 제거로 삭제
+            ai_response = response.content
+            
 
-        # --- AI 답변 감성 분석 ---
+        # AI 답변 감성 분석 실시
         if sentiment_analyzer:
             try:
                 sentiment_analysis_output = sentiment_analyzer(ai_response)
                 sentiment_result = sentiment_analysis_output[0]
                 
-                # sangrimlee/bert-base-multilingual-cased-nsmc 모델의 출력 라벨 매핑
-                # 이 모델은 'negative'와 'positive'를 반환함.
+                # sangrimlee/bert-base-multilingual-cased-nsmc 모델의 출력에 라벨 매핑.
+                # 이 모델은 'negative'와 'positive'를 반환하고 한글과 매핑되게 라벨링.
                 mapped_label = "중립" # 기본값
                 if sentiment_result["label"] == "negative":
                     mapped_label = "부정"
@@ -163,7 +161,7 @@ if prompt_input := st.chat_input("회장님, 무엇을 도와드릴까요?"):
                 sentiment_result["label"] = mapped_label
 
             except Exception as e:
-                st.warning(f"감성 분석 처리 중 오류 발생: {e}")
+                st.warning(f"감성 분석 처리 중 오류 발생: {e}")   # 이건 오류 보이게 설정.
     
     # 챗봇 답변 표시 및 세션 상태에 저장
     with st.chat_message("assistant"):
@@ -175,9 +173,10 @@ if prompt_input := st.chat_input("회장님, 무엇을 도와드릴까요?"):
     st.session_state.messages.append({"role": "assistant", "content": ai_response})
     st.session_state.sentiment_history.append(sentiment_result) # 감성 결과도 함께 저장
 
-# 대화 초기화 버튼 (항상 화면에 표시됨)
+
+# 대화 초기화 버튼(항상 화면에 표시되어야 함.)
 if st.button("대화 초기화"):
-    st.session_state.messages = []
-    st.session_state.sentiment_history = []
-    st.session_state.message_count = 0 # 메시지 카운트도 초기화
-    st.rerun() # 앱 다시 실행하여 UI 업데이트
+    st.session_state.messages = []  # 메시지 초기화
+    st.session_state.sentiment_history = []  # 감정 분석 결과 초기화
+    st.session_state.message_count = 0  # 메시지 카운트 초기화
+    st.rerun() # 앱 재실행 및 UI 업데이트
