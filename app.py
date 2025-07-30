@@ -92,6 +92,15 @@ if "message_count" not in st.session_state:
 # 최대 메시지 횟수 설정
 MAX_MESSAGES = 10
 
+# --- 로컬 GIF 파일 경로 지정 ---
+# 챗봇 앱(app.py)과 같은 폴더에 'Catani.gif' 파일이 있다고 가정
+gif_file_name = "Catani.gif"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+gif_path = os.path.join(current_dir, gif_file_name)
+
+if os.path.exists(gif_path):
+    st.sidebar.image(gif_path, use_container_width=True, width=True)
+
 # 현재 메시지 카운트 표시(좌측 사이드바 default)
 st.sidebar.markdown(f"사용가능한 잔여 메시지 수: {st.session_state.message_count} / {MAX_MESSAGES}")
 if st.session_state.message_count >= MAX_MESSAGES:
