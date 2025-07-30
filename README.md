@@ -13,6 +13,7 @@
 
 3. 감성 분석 기능  
   3-1) 챗봇의 답변을 HuggingFace의 pipeline, AutoTokenizer, AutoModelForSequenceClassification을 사용하여 감정 분석, 토큰화, 긍정/부정 감성 분석을 진행하고, 결과(라벨, 점수)를 채팅창에 표시.  
+  
   3-2) 감성 분석 모델: sangrimlee/bert-base-multilingual-cased-nsmc  
 
 4. 프롬프트 엔지니어링 강화  
@@ -20,7 +21,7 @@
   4-2) temperature, max_tokens 수치를 조정하여 자연스럽고 부드런운 언행이 표시될 수 있도록 조정.  
 
 5. 대화 횟수 제한  
-  -. 불필요한 자원 낭비를 제한을 위해 사용자가 챗봇에게 보낼 수 있는 메시지 횟수를 제한하고, 남은 횟수를 사이드바에 Markdown으로 표시.
+  5-1) 불필요한 자원 낭비를 제한을 위해 사용자가 챗봇에게 보낼 수 있는 메시지 횟수를 제한하고, 남은 횟수를 사이드바에 Markdown으로 표시.
   
 ---
 
